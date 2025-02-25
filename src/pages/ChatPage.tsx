@@ -10,7 +10,7 @@ interface Message {
   role?: "user" | "assistant" | "system";
 }
 
-const SUPABASE_PROJECT_URL = import.meta.env.VITE_SUPABASE_PROJECT_URL;
+const SUPABASE_PROJECT_URL = "https://pqauiqdrserxstzxaiak.supabase.co";
 
 const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -38,7 +38,7 @@ const ChatPage = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`, // Add Authorization header
+          "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxYXVpcWRyc2VyeHN0enhhaWFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA0ODI3MDEsImV4cCI6MjA1NjA1ODcwMX0.-d_CBh9wgpnMDO_Z2Bu9xFkLIQ_jY0e-mrE7nEFIDfM`, // Add Authorization header
         },
         body: JSON.stringify({
           messages: [
