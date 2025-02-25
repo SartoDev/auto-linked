@@ -1,11 +1,13 @@
 
 import { useState } from "react";
 import { UserButton } from "@clerk/clerk-react";
+import { toast } from "sonner";
 
 interface Message {
   id: string;
   content: string;
   isUser: boolean;
+  role?: "user" | "assistant" | "system";
 }
 
 const ChatPage = () => {
@@ -15,28 +17,57 @@ const ChatPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       content: input,
       isUser: true,
+      role: "user",
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const response = await fetch("/functions/v1/chat-with-gpt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: [
+            { role: "system", content: "You are a helpful AI assistant." },
+            ...messages.map(msg => ({
+              role: msg.role || (msg.isUser ? "user" : "assistant"),
+              content: msg.content
+            })),
+            { role: "user", content: input }
+          ]
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get AI response');
+      }
+
+      const data = await response.json();
+      
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: "This is a sample AI response. Connect to an AI service to get real responses.",
+        content: data.response,
         isUser: false,
+        role: "assistant"
       };
+
       setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error("Failed to get AI response. Please try again.");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
