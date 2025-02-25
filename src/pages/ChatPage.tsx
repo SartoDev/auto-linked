@@ -10,6 +10,8 @@ interface Message {
   role?: "user" | "assistant" | "system";
 }
 
+const SUPABASE_PROJECT_URL = import.meta.env.VITE_SUPABASE_PROJECT_URL;
+
 const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -31,10 +33,12 @@ const ChatPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/functions/v1/chat-with-gpt", {
+      // Using the full Supabase URL for the Edge Function
+      const response = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/chat-with-gpt`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`, // Add Authorization header
         },
         body: JSON.stringify({
           messages: [
