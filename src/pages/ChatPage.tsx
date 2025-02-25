@@ -33,21 +33,20 @@ const ChatPage = () => {
     setIsLoading(true);
 
     try {
-      // Using the full Supabase URL for the Edge Function
-      const response = await fetch(`${SUPABASE_PROJECT_URL}/functions/v1/chat-with-gpt`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBOCyUHnyGl34hfZjcc1dOFf32aacYbDsM`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxYXVpcWRyc2VyeHN0enhhaWFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA0ODI3MDEsImV4cCI6MjA1NjA1ODcwMX0.-d_CBh9wgpnMDO_Z2Bu9xFkLIQ_jY0e-mrE7nEFIDfM`, // Add Authorization header
         },
         body: JSON.stringify({
-          messages: [
-            { role: "system", content: "You are a helpful AI assistant." },
-            ...messages.map(msg => ({
-              role: msg.role || (msg.isUser ? "user" : "assistant"),
-              content: msg.content
-            })),
-            { role: "user", content: input }
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": input
+                }
+              ]
+            }
           ]
         }),
       });
@@ -60,7 +59,7 @@ const ChatPage = () => {
       
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: data.response,
+        content: formatText(data.candidates[0].content.parts[0].text),
         isUser: false,
         role: "assistant"
       };
@@ -73,6 +72,14 @@ const ChatPage = () => {
       setIsLoading(false);
     }
   };
+
+  function formatText(text) {
+    return text
+        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+        .replace(/_(.*?)_/g, '<i>$1</i>')
+        .replace(/`(.*?)`/g, '<code>$1</code>')
+        .replace(/\n/g, '<br>');
+  }
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -94,7 +101,7 @@ const ChatPage = () => {
                   : "bg-muted"
               } animate-fade-in`}
             >
-              {message.content}
+              <div dangerouslySetInnerHTML={{ __html: message.content }} />
             </div>
           </div>
         ))}
