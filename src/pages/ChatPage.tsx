@@ -3,7 +3,7 @@ import { UserButton } from "@clerk/clerk-react";
 import { toast } from "sonner";
 import remarkGfm from 'remark-gfm'
 import Markdown from "react-markdown";
-import {DialogDemo} from "@/pages/CreatePost.tsx";
+import {CreatePostDialog} from "@/pages/CreatePost.tsx";
 
 interface Message {
   id: string;
@@ -85,6 +85,7 @@ const ChatPage = () => {
     <div className="flex flex-col h-screen bg-background">
       <header className="flex items-center justify-between p-4 border-b bg-background/80 backdrop-blur-sm">
         <h1 className="text-xl font-semibold">AI Chat</h1>
+        <CreatePostDialog content=""/>
         <UserButton />
       </header>
 
@@ -104,7 +105,7 @@ const ChatPage = () => {
               {message.role === "system" ? (
                   <div className="flex items-center gap-2">
                     <span>Gostou da resposta?</span>
-                    <DialogDemo content={message.content}/>
+                    <CreatePostDialog content={message.content}/>
                   </div>
               ) : (
                   <Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>

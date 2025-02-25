@@ -28,7 +28,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -46,12 +45,10 @@ interface Props {
 }
 
 const formSchema = z.object({
-    content: z.string().min(1, {
-        message: "Content must be not empty.",
-    }),
+    content: z.string()
 })
 
-export function DialogDemo(props: Props) {
+export function CreatePostDialog(props: Props) {
     const [content, setContent] = useState<string>(props.content);
     const [fileMedia, setFileMedia] = useState<string | null>(null);
     const [file, setFile] = useState<File | null>(null);
@@ -72,7 +69,7 @@ export function DialogDemo(props: Props) {
         myHeaders.append("Content-Type", "application/json");
 
         let raw = JSON.stringify({
-            "content": values.content,
+            "content": content,
         });
 
         if(fileMedia) {
@@ -133,7 +130,7 @@ export function DialogDemo(props: Props) {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline">Criar post</Button>
+                <Button variant="outline">Create Post</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[850px]">
                 <Form {...form}>
@@ -161,7 +158,7 @@ export function DialogDemo(props: Props) {
                                                         <FormItem>
                                                             <FormLabel>Content</FormLabel>
                                                             <FormControl>
-                                                                <Textarea {...field} className="h-[300px]" id="content" placeholder="Content of post" />
+                                                                <Textarea value={content} onChange={event => setContent(event.target.value)} className="h-[300px]" id="content" placeholder="Content of post" />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -184,7 +181,7 @@ export function DialogDemo(props: Props) {
                                     <ScrollArea className="h-[400px] rounded-md border p-4">
                                 <span className={removeSpace ? "" : "post-content"}>
                                     <Markdown remarkPlugins={[remarkGfm]}>
-                                            {form.getValues().content}
+                                            {content}
                                     </Markdown>
                                 </span>
                                         {fileMedia && (
