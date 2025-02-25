@@ -7,7 +7,7 @@ import {DialogDemo} from "@/pages/CreatePost.tsx";
 
 interface Message {
   id: string;
-  content?: string;
+  content: string;
   isUser: boolean;
   role?: "user" | "assistant" | "system";
 }
@@ -43,7 +43,7 @@ const ChatPage = () => {
             {
               "parts": [
                 {
-                  "text": input
+                  "text": "Create a creative LinkedIn post about the IT field, focusing on emerging trends or technological innovation. The post should be engaging and capable of sparking discussion. Use accessible language, with touches of enthusiasm and curiosity. Also, include a question at the end to encourage the community to share their opinions. Use hashtags related to IT and innovation. " + input
                 }
               ]
             }
@@ -67,6 +67,7 @@ const ChatPage = () => {
       const systemMessage: Message = {
         id: (Date.now() + 1).toString(),
         isUser: false,
+        content: data.candidates[0].content.parts[0].text,
         role: "system"
       };
 
@@ -80,14 +81,6 @@ const ChatPage = () => {
     }
   };
 
-  function formatText(text) {
-    return text
-        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-        .replace(/_(.*?)_/g, '<i>$1</i>')
-        .replace(/`(.*?)`/g, '<code>$1</code>')
-        .replace(/\n/g, '<br>');
-  }
-
   return (
     <div className="flex flex-col h-screen bg-background">
       <header className="flex items-center justify-between p-4 border-b bg-background/80 backdrop-blur-sm">
@@ -96,32 +89,6 @@ const ChatPage = () => {
       </header>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        <div className="flex items-center gap-2">
-          <span>Gostou da resposta?</span>
-          <DialogDemo content={"Dica de JavaScript: Deixe suas listas mais naturais com Intl.ListFormat\n" +
-              "\n" +
-              "Já precisou transformar uma lista em uma frase bem escrita, tipo \"chocolate, baunilha e morango\", sem ter que ficar juntando tudo na mão? O JavaScript tem uma ferramenta ótima pra isso: a API Intl.ListFormat.\n" +
-              "\n" +
-              "Olha no print como fica simples!\n" +
-              "\n" +
-              "O que tá acontecendo aqui?\n" +
-              "\n" +
-              "O Intl.ListFormat formata a lista seguindo as regras do idioma, no caso, português do Brasil com 'pt-BR'.\n" +
-              "\n" +
-              "Com { style: 'long', type: 'conjunction' }, ele separa os itens com vírgula e coloca um \"e\" antes do último, do jeitinho que a gente fala.\n" +
-              "\n" +
-              "Por que isso é legal?\n" +
-              "\n" +
-              "Imagina um sistema que diz: \"Você escolheu chocolate, baunilha e morango\". Usando essa API, não preciso ficar mexendo com strings manualmente, e o código ainda funciona pra outros idiomas ou estilos (tipo trocar o \"e\" por \"ou\" mudando pra 'disjunction'). É prático e deixa tudo mais elegante.\n" +
-              "\n" +
-              "Você já usou algo assim no seu projeto? Conta aí nos comentários, quero trocar ideia!\n" +
-              "\n" +
-              "\n" +
-              "\n" +
-              "\n" +
-              "\n" +
-              "hashtag#JavaScript hashtag#Programação hashtag#DicaDeCódigo hashtag#frontend"}/>
-        </div>
         {messages.map((message) => (
           <div
             key={message.id}

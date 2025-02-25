@@ -37,6 +37,9 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import {z} from "zod";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner"
+import remarkGfm from "remark-gfm";
 
 interface Props {
     content: string
@@ -51,7 +54,10 @@ const formSchema = z.object({
 export function DialogDemo(props: Props) {
     const [content, setContent] = useState<string>(props.content);
     const [fileMedia, setFileMedia] = useState<string | null>(null);
+    const [file, setFile] = useState<File | null>(null);
     const [removeSpace, setRemoveSpace] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -60,28 +66,61 @@ export function DialogDemo(props: Props) {
         },
     })
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        setLoading(true)
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        const raw = JSON.stringify({
+
+        let raw = JSON.stringify({
             "content": values.content,
         });
+
+        if(fileMedia) {
+            const response = await fetch("https://auto-linked-api-azure.vercel.app/initialize-upload", {
+                method: "POST"
+            })
+            const responseJson = await response.json()
+            const uploadHeaders = new Headers();
+            uploadHeaders.append("upload-url", responseJson["value"]["uploadUrl"]);
+            const formData = new FormData();
+            formData.append("file", file, "/C:/Users/Administrador/Downloads/linkedin.jpeg");
+            const uploadOptions = {
+                method: "PUT",
+                headers: uploadHeaders,
+                body: formData
+            };
+            const responseUpload = await fetch(`https://auto-linked-api-azure.vercel.app/upload`, uploadOptions)
+            if(responseUpload.ok) {
+                raw = JSON.stringify({
+                    content: values.content,
+                    imageId: responseJson["value"]["image"],
+                });
+            } else {
+                setLoading(false)
+                return;
+            }
+        }
 
         const requestOptions = {
             method: "POST",
             headers: myHeaders,
-            body: raw,
+            body: raw
         };
 
-        fetch("https://auto-linked-api-azure.vercel.app/", requestOptions)
-            .then((response) => response.text())
-            .then((result) => console.log(result))
-            .catch((error) => console.error(error));
+        const response = await fetch("https://auto-linked-api-azure.vercel.app", requestOptions)
+        setLoading(false)
+        setIsOpen(false)
+        if(response.status == 204) {
+            toast("Post created successfully!")
+        } else {
+            toast("Error creating the post!")
+        }
     }
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            setFile(file);
             const reader = new FileReader();
             reader.onloadend = () => {
                 setFileMedia(reader.result as string);
@@ -92,7 +131,7 @@ export function DialogDemo(props: Props) {
     };
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button variant="outline">Criar post</Button>
             </DialogTrigger>
@@ -122,7 +161,7 @@ export function DialogDemo(props: Props) {
                                                         <FormItem>
                                                             <FormLabel>Content</FormLabel>
                                                             <FormControl>
-                                                                <Textarea {...field} className="h-[300px]" onChange={event => setContent(event.target.value)} id="content" placeholder="Content of post" />
+                                                                <Textarea {...field} className="h-[300px]" id="content" placeholder="Content of post" />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -135,6 +174,7 @@ export function DialogDemo(props: Props) {
                                                     id="media"
                                                     type="file"
                                                     onChange={handleFileChange}
+                                                    accept=".jpg, .jpeg, .png"
                                                 />
                                             </div>
                                         </CardContent>
@@ -143,21 +183,12 @@ export function DialogDemo(props: Props) {
                                 <TabsContent value="preview">
                                     <ScrollArea className="h-[400px] rounded-md border p-4">
                                 <span className={removeSpace ? "" : "post-content"}>
-                                    <Markdown>
-                                        {content}
+                                    <Markdown remarkPlugins={[remarkGfm]}>
+                                            {form.getValues().content}
                                     </Markdown>
                                 </span>
                                         {fileMedia && (
-                                            <div className="mt-4">
-                                                {fileMedia.startsWith("data:video") ? (
-                                                    <video controls className="w-full">
-                                                        <source src={fileMedia} type="video/mp4" />
-                                                        Seu navegador não suporta vídeos.
-                                                    </video>
-                                                ) : (
-                                                    <img src={fileMedia} alt="Uploaded media" className="w-full object-contain" />
-                                                )}
-                                            </div>
+                                            <img src={fileMedia} alt="Uploaded media" className="w-full object-contain" />
                                         )}
                                     </ScrollArea>
 
@@ -174,7 +205,12 @@ export function DialogDemo(props: Props) {
                             </Tabs>
                         </div>
                         <DialogFooter>
-                            <Button type="submit">Post</Button>
+                            <Button disabled={loading} type="submit">
+                                {loading &&
+                                    <Loader2 className="animate-spin" />
+                                }
+                                Post
+                            </Button>
                         </DialogFooter>
                     </form>
                 </Form>
