@@ -1,16 +1,16 @@
-
 import { useState } from "react";
 import { UserButton } from "@clerk/clerk-react";
 import { toast } from "sonner";
+import remarkGfm from 'remark-gfm'
+import Markdown from "react-markdown";
+import {DialogDemo} from "@/pages/CreatePost.tsx";
 
 interface Message {
   id: string;
-  content: string;
+  content?: string;
   isUser: boolean;
   role?: "user" | "assistant" | "system";
 }
-
-const SUPABASE_PROJECT_URL = "https://pqauiqdrserxstzxaiak.supabase.co";
 
 const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -59,12 +59,19 @@ const ChatPage = () => {
       
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: formatText(data.candidates[0].content.parts[0].text),
+        content: data.candidates[0].content.parts[0].text,
         isUser: false,
         role: "assistant"
       };
 
+      const systemMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        isUser: false,
+        role: "system"
+      };
+
       setMessages((prev) => [...prev, aiMessage]);
+      setMessages((prev) => [...prev, systemMessage]);
     } catch (error) {
       console.error('Error:', error);
       toast.error("Failed to get AI response. Please try again.");
@@ -89,6 +96,32 @@ const ChatPage = () => {
       </header>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex items-center gap-2">
+          <span>Gostou da resposta?</span>
+          <DialogDemo content={"Dica de JavaScript: Deixe suas listas mais naturais com Intl.ListFormat\n" +
+              "\n" +
+              "Já precisou transformar uma lista em uma frase bem escrita, tipo \"chocolate, baunilha e morango\", sem ter que ficar juntando tudo na mão? O JavaScript tem uma ferramenta ótima pra isso: a API Intl.ListFormat.\n" +
+              "\n" +
+              "Olha no print como fica simples!\n" +
+              "\n" +
+              "O que tá acontecendo aqui?\n" +
+              "\n" +
+              "O Intl.ListFormat formata a lista seguindo as regras do idioma, no caso, português do Brasil com 'pt-BR'.\n" +
+              "\n" +
+              "Com { style: 'long', type: 'conjunction' }, ele separa os itens com vírgula e coloca um \"e\" antes do último, do jeitinho que a gente fala.\n" +
+              "\n" +
+              "Por que isso é legal?\n" +
+              "\n" +
+              "Imagina um sistema que diz: \"Você escolheu chocolate, baunilha e morango\". Usando essa API, não preciso ficar mexendo com strings manualmente, e o código ainda funciona pra outros idiomas ou estilos (tipo trocar o \"e\" por \"ou\" mudando pra 'disjunction'). É prático e deixa tudo mais elegante.\n" +
+              "\n" +
+              "Você já usou algo assim no seu projeto? Conta aí nos comentários, quero trocar ideia!\n" +
+              "\n" +
+              "\n" +
+              "\n" +
+              "\n" +
+              "\n" +
+              "hashtag#JavaScript hashtag#Programação hashtag#DicaDeCódigo hashtag#frontend"}/>
+        </div>
         {messages.map((message) => (
           <div
             key={message.id}
@@ -101,7 +134,15 @@ const ChatPage = () => {
                   : "bg-muted"
               } animate-fade-in`}
             >
-              <div dangerouslySetInnerHTML={{ __html: message.content }} />
+              {message.role === "system" ? (
+                  <div className="flex items-center gap-2">
+                    <span>Gostou da resposta?</span>
+                    <DialogDemo content={message.content}/>
+                  </div>
+              ) : (
+                  <Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>
+              )}
+
             </div>
           </div>
         ))}

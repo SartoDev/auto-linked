@@ -99,3 +99,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+ul {
+  list-style: circle !important;
+  padding-left: 2rem !important;
+}
+
+.post-content {
+  white-space: pre-wrap;
+  word-wrap: break-word
+}
