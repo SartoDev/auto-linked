@@ -1,8 +1,10 @@
 
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
+const genAI = new GoogleGenerativeAI(geminiApiKey || '');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -10,7 +12,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -19,42 +20,32 @@ serve(async (req) => {
     const { messages } = await req.json();
     
     if (!messages || !Array.isArray(messages)) {
-      throw new Error('Invalid messages format');
+      throw new Error('Formato de mensagens inválido');
     }
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: messages,
-        temperature: 0.7,
-      }),
+    // Converter mensagens do formato ChatGPT para o formato do Gemini
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const chat = model.startChat({
+      history: messages.slice(0, -1).map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: msg.content,
+      })),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('OpenAI API Error:', errorData);
-      throw new Error(`OpenAI API returned ${response.status}`);
-    }
+    const lastMessage = messages[messages.length - 1];
+    const result = await chat.sendMessage(lastMessage.content);
+    const response = await result.response;
+    const aiResponse = response.text();
 
-    const data = await response.json();
-    
-    if (!data?.choices?.[0]?.message?.content) {
-      console.error('Unexpected OpenAI response format:', data);
-      throw new Error('Invalid response from OpenAI');
+    if (!aiResponse) {
+      throw new Error('Resposta vazia do Gemini');
     }
-
-    const aiResponse = data.choices[0].message.content;
 
     return new Response(JSON.stringify({ response: aiResponse }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error in chat-with-gpt function:', error);
+    console.error('Erro na função chat-with-gemini:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
