@@ -67,6 +67,9 @@ export function DialogDemo(props: Props) {
         myHeaders.append("X-Restli-Protocol-Version", "2.0.0");
         myHeaders.append("LinkedIn-Version", "202502");
         myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Access-Control-Allow-Origin", "*");
+        myHeaders.append("Access-Control-Allow-Credentials", "true");
+        myHeaders.append("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
         myHeaders.append("Cookie", "lidc=\"b=TB72:s=T:r=T:a=T:p=T:g=4322:u=463:x=1:i=1740506362:t=1740510516:v=2:sig=AQEBuIDT9RMh8VbJ5UfeSKrnYSxmEPFO\"; __cf_bm=2qORzZUKQ2OW5UCtbBI0rbD9Rjf32mCGnoqLekNqPEA-1740505323-1.0.1.1-tYmes8R5obIEGrUUv0aRkNAYLgqEE8CDAAvKGBhhXdVY9.qLHX3.w.BU6.u.uKgOSC8M93vGQXH5THGfXFMHxw; bcookie=\"v=2&cb3c9924-61cc-4cab-8c81-4e9a1b60ac59\"; lang=v=2&lang=en-us; lidc=\"b=OGST07:s=O:r=O:a=O:p=O:g=3116:u=1:x=1:i=1740505323:t=1740591723:v=2:sig=AQGnEYHRH-GNBHDiX0SWdLx-BqzP4IZS\"");
 
         const raw = JSON.stringify({
