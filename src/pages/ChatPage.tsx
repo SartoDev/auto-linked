@@ -43,7 +43,7 @@ const ChatPage = () => {
             {
               "parts": [
                 {
-                  "text": "Create a creative LinkedIn post about the IT field, focusing on emerging trends or technological innovation. The post should be engaging and capable of sparking discussion. Use accessible language, with touches of enthusiasm and curiosity. Also, include a question at the end to encourage the community to share their opinions. Use hashtags related to IT and innovation. " + input
+                  "text": input
                 }
               ]
             }
