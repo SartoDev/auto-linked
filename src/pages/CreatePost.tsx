@@ -116,7 +116,8 @@ export function CreatePostDialog(props: Props) {
             body: raw
         };
 
-        const response = await fetch("https://auto-linked-api-azure.vercel.app?accessToken=${data.accessToken}&accountId=${data.accountId}", requestOptions)
+        const response = await fetch(`https://auto-linked-api-azure.vercel.app?accessToken=${data.accessToken}&accountId=${data.accountId}`, requestOptions)
+        console.log(response)
         setLoading(false)
         setIsOpen(false)
         if(response.status == 204) {
