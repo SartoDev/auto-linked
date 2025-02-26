@@ -104,7 +104,7 @@ const ChatPage = () => {
             >
               {message.role === "system" ? (
                   <div className="flex items-center gap-2">
-                    <span>Gostou da resposta?</span>
+                    <span>Did you like the answer?</span>
                     <CreatePostDialog content={message.content}/>
                   </div>
               ) : (
