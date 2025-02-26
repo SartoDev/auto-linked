@@ -89,7 +89,7 @@ export function CreatePostDialog(props: Props) {
             const responseUpload = await fetch(`https://auto-linked-api-azure.vercel.app/upload`, uploadOptions)
             if(responseUpload.ok) {
                 raw = JSON.stringify({
-                    content: values.content,
+                    content: content,
                     imageId: responseJson["value"]["image"],
                 });
             } else {
