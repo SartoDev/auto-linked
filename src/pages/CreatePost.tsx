@@ -73,7 +73,7 @@ export function CreatePostDialog(props: Props) {
             "content": content,
         });
 
-        const responseToken = await fetch(`http://localhost:3001/access-token?userId=${userId}`, {
+        const responseToken = await fetch(`https://auto-linked-api-azure.vercel.app/access-token?userId=${userId}`, {
             method: "GET"
         })
 
