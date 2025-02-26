@@ -39,6 +39,7 @@ import {z} from "zod";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner"
 import remarkGfm from "remark-gfm";
+import {useAuth } from '@clerk/clerk-react'
 
 interface Props {
     content: string
@@ -55,6 +56,7 @@ export function CreatePostDialog(props: Props) {
     const [removeSpace, setRemoveSpace] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const { userId } = useAuth()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -62,7 +64,6 @@ export function CreatePostDialog(props: Props) {
             content: props.content
         },
     })
-
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setLoading(true)
         const myHeaders = new Headers();
@@ -72,21 +73,32 @@ export function CreatePostDialog(props: Props) {
             "content": content,
         });
 
+        const responseToken = await fetch(`http://localhost:3001/access-token?userId=${userId}`, {
+            method: "GET"
+        })
+
+        const responseTokenJson = await responseToken.json()
+
+        const data = {
+            "accessToken": responseTokenJson["accessToken"],
+            "accountId": responseTokenJson["accountId"]
+        }
+
         if(fileMedia) {
-            const response = await fetch("https://auto-linked-api-azure.vercel.app/initialize-upload", {
+            const response = await fetch(`https://auto-linked-api-azure.vercel.app/initialize-upload?accessToken=${data.accessToken}&accountId=${data.accountId}`, {
                 method: "POST"
             })
             const responseJson = await response.json()
             const uploadHeaders = new Headers();
             uploadHeaders.append("upload-url", responseJson["value"]["uploadUrl"]);
             const formData = new FormData();
-            formData.append("file", file, "/C:/Users/Administrador/Downloads/linkedin.jpeg");
+            formData.append("file", file);
             const uploadOptions = {
                 method: "PUT",
                 headers: uploadHeaders,
                 body: formData
             };
-            const responseUpload = await fetch(`https://auto-linked-api-azure.vercel.app/upload`, uploadOptions)
+            const responseUpload = await fetch(`https://auto-linked-api-azure.vercel.app/upload?accessToken=${data.accessToken}`, uploadOptions)
             if(responseUpload.ok) {
                 raw = JSON.stringify({
                     content: content,
@@ -104,7 +116,7 @@ export function CreatePostDialog(props: Props) {
             body: raw
         };
 
-        const response = await fetch("https://auto-linked-api-azure.vercel.app", requestOptions)
+        const response = await fetch("https://auto-linked-api-azure.vercel.app?accessToken=${data.accessToken}&accountId=${data.accountId}", requestOptions)
         setLoading(false)
         setIsOpen(false)
         if(response.status == 204) {
