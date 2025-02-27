@@ -56,7 +56,8 @@ export function CreatePostDialog(props: Props) {
     const [removeSpace, setRemoveSpace] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const { userId } = useAuth()
+    const { userId } = useAuth();
+    const baseUrl = import.meta.env.VITE_API_URL;
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -73,9 +74,15 @@ export function CreatePostDialog(props: Props) {
             "content": content,
         });
 
-        const responseToken = await fetch(`https://auto-linked-api-azure.vercel.app/access-token?userId=${userId}`, {
+        const responseToken = await fetch(`${baseUrl}/access-token?userId=${userId}`, {
             method: "GET"
         })
+
+        if(responseToken.status != 200) {
+            setLoading(false);
+            toast("User not logged into LinkedIn!")
+            return;
+        }
 
         const responseTokenJson = await responseToken.json()
 
@@ -85,7 +92,7 @@ export function CreatePostDialog(props: Props) {
         }
 
         if(fileMedia) {
-            const response = await fetch(`https://auto-linked-api-azure.vercel.app/initialize-upload?accessToken=${data.accessToken}&accountId=${data.accountId}`, {
+            const response = await fetch(`${baseUrl}/initialize-upload?accessToken=${data.accessToken}&accountId=${data.accountId}`, {
                 method: "POST"
             })
             const responseJson = await response.json()
@@ -98,7 +105,7 @@ export function CreatePostDialog(props: Props) {
                 headers: uploadHeaders,
                 body: formData
             };
-            const responseUpload = await fetch(`https://auto-linked-api-azure.vercel.app/upload?accessToken=${data.accessToken}`, uploadOptions)
+            const responseUpload = await fetch(`${baseUrl}/upload?accessToken=${data.accessToken}`, uploadOptions)
             if(responseUpload.ok) {
                 raw = JSON.stringify({
                     content: content,
@@ -116,8 +123,7 @@ export function CreatePostDialog(props: Props) {
             body: raw
         };
 
-        const response = await fetch(`https://auto-linked-api-azure.vercel.app?accessToken=${data.accessToken}&accountId=${data.accountId}`, requestOptions)
-        console.log(response)
+        const response = await fetch(`${baseUrl}/post?accessToken=${data.accessToken}&accountId=${data.accountId}`, requestOptions)
         setLoading(false)
         setIsOpen(false)
         if(response.status == 204) {
