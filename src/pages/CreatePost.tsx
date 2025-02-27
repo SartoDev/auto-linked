@@ -80,7 +80,8 @@ export function CreatePostDialog(props: Props) {
 
         if(responseToken.status != 200) {
             setLoading(false);
-            toast("User not logged into LinkedIn!")
+            const error = await responseToken.text();
+            toast(error)
             return;
         }
 
