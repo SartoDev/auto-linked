@@ -140,7 +140,6 @@ export function CreatePostDialog(props: Props) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setFileMedia(reader.result as string);
-                console.log(reader.result as string);
             };
             reader.readAsDataURL(file);
         }
