@@ -84,7 +84,10 @@ const ChatPage = () => {
   return (
     <div className="flex flex-col h-screen bg-background">
       <header className="flex items-center justify-between p-4 border-b bg-background/80 backdrop-blur-sm">
-        <h1 className="text-xl font-semibold">AI Chat</h1>
+        <div className="flex items-center gap-3">
+          <img alt="Auto Linked Logo" src="/favicon.ico" height={40} width={40}/>
+          <h1 className="text-xl font-semibold">Auto Linked</h1>
+        </div>
         <CreatePostDialog content=""/>
         <UserButton />
       </header>
