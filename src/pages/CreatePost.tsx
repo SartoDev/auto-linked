@@ -66,6 +66,7 @@ export function CreatePostDialog(props: Props) {
         },
     })
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        const linkedinIntegration = `${baseUrl}/linkedin`
         setLoading(true)
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -74,7 +75,7 @@ export function CreatePostDialog(props: Props) {
             "content": content,
         });
 
-        const responseToken = await fetch(`${baseUrl}/access-token?userId=${userId}`, {
+        const responseToken = await fetch(`${linkedinIntegration}/token?user-id=${userId}`, {
             method: "GET"
         })
 
@@ -92,21 +93,31 @@ export function CreatePostDialog(props: Props) {
             "accountId": responseTokenJson["accountId"]
         }
 
+        const requestHeaders = new Headers();
+        requestHeaders.append("access-token", data.accessToken);
+        requestHeaders.append("account-id", data.accountId);
+        requestHeaders.append("Content-Type", "application/json");
+
         if(fileMedia) {
-            const response = await fetch(`${baseUrl}/initialize-upload?accessToken=${data.accessToken}&accountId=${data.accountId}`, {
-                method: "POST"
+            const response = await fetch(`${linkedinIntegration}/initialize-upload`, {
+                method: "POST",
+                headers: requestHeaders
             })
+
             const responseJson = await response.json()
+
             const uploadHeaders = new Headers();
             uploadHeaders.append("upload-url", responseJson["value"]["uploadUrl"]);
+            uploadHeaders.append("access-token", data.accessToken);
+
             const formData = new FormData();
             formData.append("file", file);
-            const uploadOptions = {
+
+            const responseUpload = await fetch(`${linkedinIntegration}/upload`, {
                 method: "PUT",
                 headers: uploadHeaders,
                 body: formData
-            };
-            const responseUpload = await fetch(`${baseUrl}/upload?accessToken=${data.accessToken}`, uploadOptions)
+            })
             if(responseUpload.ok) {
                 raw = JSON.stringify({
                     content: content,
@@ -118,16 +129,14 @@ export function CreatePostDialog(props: Props) {
             }
         }
 
-        const requestOptions = {
+        const response = await fetch(`${linkedinIntegration}/post`, {
             method: "POST",
-            headers: myHeaders,
+            headers: requestHeaders,
             body: raw
-        };
-
-        const response = await fetch(`${baseUrl}/post?accessToken=${data.accessToken}&accountId=${data.accountId}`, requestOptions)
+        })
         setLoading(false)
         setIsOpen(false)
-        if(response.status == 204) {
+        if(response.status == 201) {
             toast("Post created successfully!")
         } else {
             toast("Error creating the post!")

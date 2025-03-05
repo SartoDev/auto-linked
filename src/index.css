@@ -100,12 +100,16 @@
   }
 }
 
-ul {
-  list-style: circle !important;
-  padding-left: 2rem !important;
-}
-
 .post-content {
   white-space: pre-wrap;
   word-wrap: break-word
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
