@@ -36,13 +36,16 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import {z} from "zod";
-import { Loader2 } from "lucide-react";
+import {Loader2, Send} from "lucide-react";
 import { toast } from "sonner"
 import remarkGfm from "remark-gfm";
 import {useAuth } from '@clerk/clerk-react'
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
+import * as React from "react";
 
 interface Props {
-    content: string
+    content: string;
+    icon: boolean;
 }
 
 const formSchema = z.object({
@@ -82,7 +85,9 @@ export function CreatePostDialog(props: Props) {
         if(responseToken.status != 200) {
             setLoading(false);
             const error = await responseToken.text();
-            toast(error)
+            toast.error(error, {
+                duration: 3000
+            })
             return;
         }
 
@@ -137,9 +142,13 @@ export function CreatePostDialog(props: Props) {
         setLoading(false)
         setIsOpen(false)
         if(response.status == 201) {
-            toast("Post created successfully!")
+            toast.success("Post created successfully!", {
+                duration: 3000
+            })
         } else {
-            toast("Error creating the post!")
+            toast.error("Error creating the post!", {
+                duration: 3000
+            })
         }
     }
 
@@ -157,8 +166,21 @@ export function CreatePostDialog(props: Props) {
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <Button variant="outline">Create Post</Button>
+            <DialogTrigger>
+                {props.icon ? <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <Send/>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                            <p>Create Post</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider> : <Button variant="outline">
+                    Create Post
+                </Button>}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[850px]">
                 <Form {...form}>
