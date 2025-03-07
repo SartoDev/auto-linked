@@ -36,13 +36,16 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import {z} from "zod";
-import { Loader2 } from "lucide-react";
+import {Loader2, Send} from "lucide-react";
 import { toast } from "sonner"
 import remarkGfm from "remark-gfm";
 import {useAuth } from '@clerk/clerk-react'
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
+import * as React from "react";
 
 interface Props {
-    content: string
+    content: string;
+    icon: boolean;
 }
 
 const formSchema = z.object({
@@ -66,6 +69,7 @@ export function CreatePostDialog(props: Props) {
         },
     })
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        const linkedinIntegration = `${baseUrl}/linkedin`
         setLoading(true)
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -74,14 +78,16 @@ export function CreatePostDialog(props: Props) {
             "content": content,
         });
 
-        const responseToken = await fetch(`${baseUrl}/access-token?userId=${userId}`, {
+        const responseToken = await fetch(`${linkedinIntegration}/token?user-id=${userId}`, {
             method: "GET"
         })
 
         if(responseToken.status != 200) {
             setLoading(false);
             const error = await responseToken.text();
-            toast(error)
+            toast.error(error, {
+                duration: 3000
+            })
             return;
         }
 
@@ -92,21 +98,31 @@ export function CreatePostDialog(props: Props) {
             "accountId": responseTokenJson["accountId"]
         }
 
+        const requestHeaders = new Headers();
+        requestHeaders.append("access-token", data.accessToken);
+        requestHeaders.append("account-id", data.accountId);
+        requestHeaders.append("Content-Type", "application/json");
+
         if(fileMedia) {
-            const response = await fetch(`${baseUrl}/initialize-upload?accessToken=${data.accessToken}&accountId=${data.accountId}`, {
-                method: "POST"
+            const response = await fetch(`${linkedinIntegration}/initialize-upload`, {
+                method: "POST",
+                headers: requestHeaders
             })
+
             const responseJson = await response.json()
+
             const uploadHeaders = new Headers();
             uploadHeaders.append("upload-url", responseJson["value"]["uploadUrl"]);
+            uploadHeaders.append("access-token", data.accessToken);
+
             const formData = new FormData();
             formData.append("file", file);
-            const uploadOptions = {
+
+            const responseUpload = await fetch(`${linkedinIntegration}/upload`, {
                 method: "PUT",
                 headers: uploadHeaders,
                 body: formData
-            };
-            const responseUpload = await fetch(`${baseUrl}/upload?accessToken=${data.accessToken}`, uploadOptions)
+            })
             if(responseUpload.ok) {
                 raw = JSON.stringify({
                     content: content,
@@ -118,19 +134,21 @@ export function CreatePostDialog(props: Props) {
             }
         }
 
-        const requestOptions = {
+        const response = await fetch(`${linkedinIntegration}/post`, {
             method: "POST",
-            headers: myHeaders,
+            headers: requestHeaders,
             body: raw
-        };
-
-        const response = await fetch(`${baseUrl}/post?accessToken=${data.accessToken}&accountId=${data.accountId}`, requestOptions)
+        })
         setLoading(false)
         setIsOpen(false)
-        if(response.status == 204) {
-            toast("Post created successfully!")
+        if(response.status == 201) {
+            toast.success("Post created successfully!", {
+                duration: 3000
+            })
         } else {
-            toast("Error creating the post!")
+            toast.error("Error creating the post!", {
+                duration: 3000
+            })
         }
     }
 
@@ -148,8 +166,21 @@ export function CreatePostDialog(props: Props) {
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <Button variant="outline">Create Post</Button>
+            <DialogTrigger>
+                {props.icon ? <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <Send/>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                            <p>Create Post</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider> : <Button variant="outline">
+                    Create Post
+                </Button>}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[850px]">
                 <Form {...form}>
