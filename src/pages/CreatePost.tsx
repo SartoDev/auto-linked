@@ -209,7 +209,7 @@ export function CreatePostDialog(props: Props) {
                                                             <FormLabel>Content</FormLabel>
                                                             <FormControl>
                                                                 <Textarea value={content} onChange={event => setContent(event.target.value)}
-                                                                          className="sm:h-[175px] lg:h-[300px]" id="content" placeholder="Content of post" />
+                                                                          className="min-[320px]:h-[200px] lg:h-[300px]" id="content" placeholder="Content of post" />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -229,7 +229,7 @@ export function CreatePostDialog(props: Props) {
                                     </Card>
                                 </TabsContent>
                                 <TabsContent value="preview">
-                                    <ScrollArea className="h-[400px] rounded-md border p-4">
+                                    <ScrollArea className="min-[320px]:h-[200px] lg:h-[400px] rounded-md border p-4">
                                         <span className={removeSpace ? "" : "post-content"}>
                                             <Markdown remarkPlugins={[remarkGfm]}>
                                                 {content}

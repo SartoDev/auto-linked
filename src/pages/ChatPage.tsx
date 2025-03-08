@@ -174,6 +174,7 @@ const ChatPage = () => {
                 placeholder="Type your message..."
             />
             <Button
+                className="min-[320px]:w-12"
                 type="submit"
                 size="icon"
                 disabled={!input.trim() || isLoading}
