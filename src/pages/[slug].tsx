@@ -254,7 +254,6 @@ const ChatPageSlug = () => {
                 type="submit"
                 size="icon"
                 disabled={!input.trim() || isLoading}
-                className="bg-primary"
             >
               {isLoading ? <Loader2 className="animate-spin" /> : <ArrowUp/> }
             </Button>
