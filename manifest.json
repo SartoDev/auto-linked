@@ -1,0 +1,16 @@
+{
+  "name": "Auto Linked",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "short_name": "Auto Linked",
+  "description": "AI-powered chatbot to generate amazing LinkedIn posts in seconds.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "./public/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
