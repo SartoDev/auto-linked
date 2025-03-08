@@ -21,6 +21,9 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
 import {useTheme} from "@/components/theme-provider.tsx";
+import {Input} from "@/components/ui/input.tsx";
+import {useIsMobile} from "@/hooks/use-mobile.tsx";
+import {ScrollArea} from "@/components/ui/scroll-area.tsx";
 
 const ChatPageSlug = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -140,12 +143,14 @@ const ChatPageSlug = () => {
         <header className="flex items-center justify-between p-2 border-b bg-background/80 backdrop-blur-sm">
           <div className="flex items-center">
             <SidebarTrigger />
-            <a href="/">
-              <h2 className="text-xl font-semibold">Auto Linked</h2>
-            </a>
+            <Button variant="ghost">
+              <a href="/">
+                <h2 className="text-xl font-semibold">Auto Linked</h2>
+              </a>
+            </Button>
           </div>
-          <CreatePostDialog icon={true} content=""/>
-          <div className="flex gap-6">
+          <CreatePostDialog icon={useIsMobile()} content=""/>
+          <div className="flex gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -170,62 +175,63 @@ const ChatPageSlug = () => {
           </div>
         </header>
 
-        <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((message) => (
-              <div className="gap-1 flex flex-col">
-                <div
-                    key={message.id}
-                    className={`flex ${message.role === Role.USER ? "justify-end" : "justify-start"}`}
-                >
+        <ScrollArea className="rounded-md border">
+          <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.map((message) => (
+                <div className="gap-1 flex flex-col">
                   <div
-                      className={`max-w-[80%] p-4 rounded-2xl ${
-                          message.role === Role.USER
-                              ? "bg-primary text-white"
-                              : "bg-muted"
-                      } animate-fade-in`}
+                      key={message.id}
+                      className={`flex ${message.role === Role.USER ? "justify-end" : "justify-start"}`}
                   >
-                    <Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>
+                    <div
+                        className={`max-w-[80%] p-4 rounded-2xl ${
+                            message.role === Role.USER
+                                ? "bg-primary text-white"
+                                : "bg-muted"
+                        } animate-fade-in`}
+                    >
+                      <Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>
 
+                    </div>
+                  </div>
+                  {message.role === Role.MODEL && <div className="flex items-center gap-2">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button onClick={() => copyToClipboard(message.content)} variant="outline" size="icon">
+                            <Copy/>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                          <p>Copy</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <CreatePostDialog icon={true} content={message.content}/>
+                  </div>
+                  }
+                </div>
+            ))}
+            <div ref={chatEndRef} />
+            {isLoading && (
+                <div className="flex justify-start animate-fade-in">
+                  <div className="bg-muted p-4 rounded-2xl">
+                    <div className="flex space-x-2">
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.2s]" />
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.4s]" />
+                    </div>
                   </div>
                 </div>
-                {message.role === Role.MODEL && <div className="flex items-center">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button onClick={() => copyToClipboard(message.content)} variant="ghost" size="icon">
-                          <Copy/>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom">
-                        <p>Copy</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <CreatePostDialog icon={true} content={message.content}/>
-                </div>
-                }
-              </div>
-          ))}
-          <div ref={chatEndRef} />
-          {isLoading && (
-              <div className="flex justify-start animate-fade-in">
-                <div className="bg-muted p-4 rounded-2xl">
-                  <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.2s]" />
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.4s]" />
-                  </div>
-                </div>
-              </div>
-          )}
-        </div>
+            )}
+          </div>
+        </ScrollArea>
 
         <form
             onSubmit={handleSubmit}
             className="p-4 border-t bg-background/80 backdrop-blur-sm"
         >
           <div className="flex space-x-4">
-
             <Button
                 style={{
                   position: "absolute",
@@ -237,17 +243,17 @@ const ChatPageSlug = () => {
                 onClick={scrollToBottom} variant="outline" size="icon">
               <ChevronDown />
             </Button>
-            <input
+            <Input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow"
             />
             <Button
-                type="submit" size="icon"
+                type="submit"
+                size="icon"
                 disabled={!input.trim() || isLoading}
-                className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+                className="bg-primary"
             >
               {isLoading ? <Loader2 className="animate-spin" /> : <ArrowUp/> }
             </Button>

@@ -22,6 +22,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
+import {Input} from "@/components/ui/input.tsx";
+import {useIsMobile} from "@/hooks/use-mobile.tsx";
 
 const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -89,12 +91,14 @@ const ChatPage = () => {
         <header className="flex items-center justify-between p-2 border-b bg-background/80 backdrop-blur-sm">
           <div className="flex items-center">
             <SidebarTrigger/>
-            <a href="/">
-              <h2 className="text-xl font-semibold">Auto Linked</h2>
-            </a>
+            <Button variant="ghost">
+              <a href="/">
+                <h2 className="text-xl font-semibold">Auto Linked</h2>
+              </a>
+            </Button>
           </div>
-          <CreatePostDialog icon={true} content=""/>
-          <div className="flex gap-6">
+          <CreatePostDialog icon={useIsMobile()} content=""/>
+          <div className="flex gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -163,12 +167,11 @@ const ChatPage = () => {
             className="p-4 border-t bg-background/80 backdrop-blur-sm"
         >
           <div className="flex space-x-4">
-            <input
+            <Input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow"
             />
             <Button
                 type="submit"

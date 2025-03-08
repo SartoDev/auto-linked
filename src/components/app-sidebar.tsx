@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/alert-dialog.tsx";
 import {toast, Toaster} from "sonner";
 import {useNavigate, useParams} from "react-router-dom";
+import {Input} from "@/components/ui/input.tsx";
 
 class Item {
     id: string;
@@ -134,7 +135,7 @@ export function AppSidebar() {
                             {items.map((item, index) => (
                                 <SidebarMenuItem key={item.id}>
                                     {item.isRenaming ?
-                                        <input ref={inputRef} className="w-full" value={item.title}
+                                        <Input ref={inputRef} className="w-full" value={item.title}
                                                onChange={(e) => handleChange(item.id, e.target.value)}
                                                onBlur={() => handleBlur(item)}
                                         />

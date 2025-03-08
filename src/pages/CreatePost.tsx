@@ -230,11 +230,11 @@ export function CreatePostDialog(props: Props) {
                                 </TabsContent>
                                 <TabsContent value="preview">
                                     <ScrollArea className="h-[400px] rounded-md border p-4">
-                                <span className={removeSpace ? "" : "post-content"}>
-                                    <Markdown remarkPlugins={[remarkGfm]}>
-                                            {content}
-                                    </Markdown>
-                                </span>
+                                        <span className={removeSpace ? "" : "post-content"}>
+                                            <Markdown remarkPlugins={[remarkGfm]}>
+                                                {content}
+                                            </Markdown>
+                                        </span>
                                         {fileMedia && (
                                             <img src={fileMedia} alt="Uploaded media" className="w-full object-contain" />
                                         )}
