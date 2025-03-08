@@ -170,7 +170,7 @@ export function CreatePostDialog(props: Props) {
                 {props.icon ? <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon">
+                            <Button variant="outline" size="icon">
                                 <Send/>
                             </Button>
                         </TooltipTrigger>
@@ -208,7 +208,8 @@ export function CreatePostDialog(props: Props) {
                                                         <FormItem>
                                                             <FormLabel>Content</FormLabel>
                                                             <FormControl>
-                                                                <Textarea value={content} onChange={event => setContent(event.target.value)} className="h-[300px]" id="content" placeholder="Content of post" />
+                                                                <Textarea value={content} onChange={event => setContent(event.target.value)}
+                                                                          className="sm:h-[175px] lg:h-[300px]" id="content" placeholder="Content of post" />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>

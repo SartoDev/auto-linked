@@ -6,7 +6,7 @@ import Markdown from "react-markdown";
 import {CreatePostDialog} from "@/pages/CreatePost.tsx";
 import {ChatSession, Content, GoogleGenerativeAI} from "@google/generative-ai";
 import {Button} from "@/components/ui/button.tsx";
-import {ArrowUp, ChevronDown, Copy, Loader2, Send, SquarePen, Trash2} from "lucide-react";
+import {ArrowUp, ChevronDown, Copy, Loader2, Moon, Send, SquarePen, Sun, Trash2} from "lucide-react";
 import {SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar.tsx";
 import {AppSidebar} from "@/components/app-sidebar.tsx";
 import {MessageService} from "@/message/message.service.ts";
@@ -14,6 +14,13 @@ import { Message, Role } from "@/message/message.ts";
 import * as React from "react";
 import {useParams} from "react-router-dom";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu.tsx";
+import {useTheme} from "@/components/theme-provider.tsx";
 
 const ChatPageSlug = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -31,6 +38,7 @@ const ChatPageSlug = () => {
   const [messageHistory, setMessageHistory] = useState<Content[]>();
   const { chatId } = useParams();
   const [copySuccess, setCopySuccess] = useState('');
+  const { setTheme } = useTheme()
 
   async function startChatByUserMessages() {
     const messages = await messageService.filterByChatId(chatId);
@@ -132,15 +140,34 @@ const ChatPageSlug = () => {
         <header className="flex items-center justify-between p-2 border-b bg-background/80 backdrop-blur-sm">
           <div className="flex items-center">
             <SidebarTrigger />
-            <Button variant="ghost" size="icon">
-              <a href="/">
-                <SquarePen />
-              </a>
-            </Button>
-            <h2 className="text-xl font-semibold">Auto Linked</h2>
+            <a href="/">
+              <h2 className="text-xl font-semibold">Auto Linked</h2>
+            </a>
           </div>
-          <CreatePostDialog icon={false} content=""/>
-          <UserButton />
+          <CreatePostDialog icon={true} content=""/>
+          <div className="flex gap-6">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                  Light
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")}>
+                  System
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <UserButton />
+          </div>
         </header>
 
         <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
