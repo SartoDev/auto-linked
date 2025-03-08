@@ -229,7 +229,7 @@ export function CreatePostDialog(props: Props) {
                                     </Card>
                                 </TabsContent>
                                 <TabsContent value="preview">
-                                    <ScrollArea className="min-[320px]:h-[200px] lg:h-[400px] rounded-md border p-4">
+                                    <ScrollArea className="min-[320px]:h-[300px] lg:h-[400px] rounded-md border p-4">
                                         <span className={removeSpace ? "" : "post-content"}>
                                             <Markdown remarkPlugins={[remarkGfm]}>
                                                 {content}
