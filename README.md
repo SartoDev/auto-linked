@@ -1,69 +1,48 @@
-# Welcome to your Lovable project
+<p align="center" dir="auto">
+<a href="https://auto-linked.vercel.app" rel="nofollow">
+<img src="https://auto-linked.vercel.app/favicon.ico" width=120>
+</a>
+</p>
 
-## Project info
+<p align="center" dir="auto">
+Frontend em <a href="https://react.dev" rel="nofollow">React</a>, <a href="https://ui.shadcn.com" rel="nofollow">ShadCN</a> e <a href="http://tailwindcss.com" rel="nofollow">TailwindCSS</a>, que permite aos usuários interagir com uma IA especializada na criação de posts para o LinkedIn, gerando conteúdos otimizados para engajamento e permitindo a criação e salvamento direto no site.
+</p>
 
-**URL**: https://lovable.dev/projects/d1f8baba-02dd-46ae-b953-8e241e1f3a4f
+![GitHub deployments](https://img.shields.io/github/deployments/SartoDev/auto-linked/production?link=https%3A%2F%2Fauto-linked.vercel.app%2F)
+![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/sarto_leonardo)
+![GitHub stars](https://img.shields.io/github/stars/SartoDev/auto-linked?style=social)
 
-## How can I edit this code?
+## Funcionalidades
+- 🗨️ **Converse com a IA** para gerar ideias e sugestões de posts.
+- ✍️ **Criação de posts** diretamente na plataforma.
+- 🔍 **Sugestão de hashtags** relevantes para melhor alcance.
+- 🎨 **Interface moderna e minimalista** com ShadCN e TailwindCSS.
+- 🌗 **Suporte a modo claro/escuro** para melhor experiência.
 
-There are several ways of editing your application.
+## Instalação
+1. Clone este repositório:
+   ```bash
+   $ git clone https://github.com/SartoDev/auto-linked.git
+   ```
+2. Acesse a pasta do projeto:
+   ```bash
+   $ cd auto-linked
+   ```
+3. Instale as dependências:
+   ```bash
+   $ npm install
+   ```
+4. Inicie o servidor de desenvolvimento:
+   ```bash
+   $ npm run dev
+   ```
 
-**Use Lovable**
+##  Como Usar
+1. Abra o navegador e acesse `http://localhost:8000`.
+2. Acesse sua conta utilizando o LinkedIn, ou crie uma
+3. Inicie uma conversa com a IA para gerar sugestões de posts.
+4. Ajuste o texto conforme necessário e publique diretamente no LinkedIn.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/d1f8baba-02dd-46ae-b953-8e241e1f3a4f) and start prompting.
+## Licença
+Este projeto está sob a licença <a href="https://github.com/SartoDev/auto-linked/blob/main/LICENSE" rel="nofollow">MIT</a>. Sinta-se à vontade para contribuir! 🚀
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/d1f8baba-02dd-46ae-b953-8e241e1f3a4f) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
