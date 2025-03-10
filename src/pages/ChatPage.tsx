@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {useIsMobile} from "@/hooks/use-mobile.tsx";
+import {ScrollArea} from "@/components/ui/scroll-area.tsx";
 
 const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -34,7 +35,8 @@ const ChatPage = () => {
   const { user } = useUser()
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash"
+    model: "gemini-2.0-flash",
+    systemInstruction: "Você é uma IA especializada na criação de posts otimizados para o LinkedIn. Sua missão é gerar conteúdos envolventes, profissionais e estratégicos, incentivando o engajamento do público. Seus posts devem ter um tom autêntico e acessível, estimulando interações com perguntas, chamadas para ação e provocações reflexivas. Use uma estrutura clara, começando com uma abertura impactante, seguida de um desenvolvimento objetivo e um fechamento cativante que convida à participação. Inclua hashtags relevantes para ampliar o alcance e adapte o estilo conforme o contexto, seja reflexivo, motivacional, técnico ou persuasivo. Seu foco é gerar valor, compartilhamento e conexões significativas para o usuário no LinkedIn."
   });
   const chat = model.startChat();
   const chatService = new ChatService();
@@ -123,44 +125,38 @@ const ChatPage = () => {
           </div>
         </header>
 
-        <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((message) => (
-              <div
-                  key={message.id}
-                  className={`flex ${message.role === Role.USER ? "justify-end" : "justify-start"}`}
-              >
+        <ScrollArea className="h-svh">
+          <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.map((message) => (
                 <div
-                    className={`max-w-[80%] p-4 rounded-2xl ${
-                        message.role === Role.USER
-                            ? "bg-primary text-white"
-                            : "bg-muted"
-                    } animate-fade-in`}
+                    key={message.id}
+                    className={`flex ${message.role === Role.USER ? "justify-end" : "justify-start"}`}
                 >
-                  {message.role === Role.SYSTEM ? (
-                      <div className="flex items-center gap-2">
-                        <span>Did you like the answer?</span>
-                        <CreatePostDialog icon={true} content={message.content}/>
-                      </div>
-                  ) : (
-                      <Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>
-                  )}
-
-                </div>
-              </div>
-          ))}
-          <div ref={chatEndRef} />
-          {isLoading && (
-              <div className="flex justify-start animate-fade-in">
-                <div className="bg-muted p-4 rounded-2xl">
-                  <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.2s]" />
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.4s]" />
+                  <div
+                      className={`max-w-[80%] p-4 rounded-2xl ${
+                          message.role === Role.USER
+                              ? "bg-primary text-white"
+                              : "bg-muted"
+                      } animate-fade-in`}
+                  >
+                    <Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>
                   </div>
                 </div>
-              </div>
-          )}
-        </div>
+            ))}
+            <div ref={chatEndRef} />
+            {isLoading && (
+                <div className="flex justify-start animate-fade-in">
+                  <div className="bg-muted p-4 rounded-2xl">
+                    <div className="flex space-x-2">
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.2s]" />
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0.4s]" />
+                    </div>
+                  </div>
+                </div>
+            )}
+          </div>
+        </ScrollArea>
 
         <form
             onSubmit={handleSubmit}

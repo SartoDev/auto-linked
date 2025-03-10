@@ -34,7 +34,8 @@ const ChatPageSlug = () => {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash"
+    model: "gemini-2.0-flash",
+    systemInstruction: "Você é uma IA especializada na criação de posts otimizados para o LinkedIn. Sua missão é gerar conteúdos envolventes, profissionais e estratégicos, incentivando o engajamento do público. Seus posts devem ter um tom autêntico e acessível, estimulando interações com perguntas, chamadas para ação e provocações reflexivas. Use uma estrutura clara, começando com uma abertura impactante, seguida de um desenvolvimento objetivo e um fechamento cativante que convida à participação. Inclua hashtags relevantes para ampliar o alcance e adapte o estilo conforme o contexto, seja reflexivo, motivacional, técnico ou persuasivo. Seu foco é gerar valor, compartilhamento e conexões significativas para o usuário no LinkedIn."
   });
   const [chat, setChat] = useState<ChatSession>();
   const messageService = new MessageService();
@@ -175,7 +176,7 @@ const ChatPageSlug = () => {
           </div>
         </header>
 
-        <ScrollArea>
+        <ScrollArea className="h-svh">
           <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.map((message) => (
                 <div className="gap-1 flex flex-col">
