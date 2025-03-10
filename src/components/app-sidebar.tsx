@@ -58,6 +58,7 @@ export function AppSidebar() {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const { chatId } = useParams();
     const navigate = useNavigate();
+    const [copySuccess, setCopySuccess] = useState('');
 
     async function deleteChat(id: string) {
         const response = await chatService.delete(id);
@@ -126,6 +127,16 @@ export function AppSidebar() {
         fetchChats()
     }, []);
 
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text).then(
+            () => setCopySuccess('Texto copiado com sucesso!'),
+            (err) => setCopySuccess('Falha ao copiar texto.')
+        );
+        toast.success("Copied successfully!", {
+            duration: 3000
+        })
+    };
+
     return (
         <Sidebar>
             <SidebarContent style={{padding: "0 0.5rem"}}>
@@ -157,11 +168,11 @@ export function AppSidebar() {
                                                         </SidebarMenuAction>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent side="right" align="start">
-                                                        <div>
-                                                            <Button className="w-full justify-start" variant="ghost">
-                                                                <Share/> Share
-                                                            </Button>
-                                                        </div>
+                                                        {/*<div>*/}
+                                                        {/*    <Button onClick={() => copyToClipboard(`https://auto-linked.vercel.app/${item.url}`)} className="w-full justify-start" variant="ghost">*/}
+                                                        {/*        <Share/> Share*/}
+                                                        {/*    </Button>*/}
+                                                        {/*</div>*/}
                                                         <div>
                                                             <Button onClick={() => handleRename(item.id)} className="w-full justify-start" variant="ghost">
                                                                 <Pencil/> Rename
